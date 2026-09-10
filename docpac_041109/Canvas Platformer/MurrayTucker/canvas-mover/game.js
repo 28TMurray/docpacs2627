@@ -1,71 +1,112 @@
 const canvasElement = document.getElementById("gameCanvas");
 const canvas = canvasElement.getContext("2d");
 
+const maxSpeed = 10;
+const jumpForce = 30;
+const gravity = 3;
+
 const player = {
     x: 800/2,
     y: 600/2,
-    w: 50,
-    h: 50,
+    width: 50,
+    height: 50,
     xSpeed: 0,
-    ySpeed: 0,
+    ySpeed: 0
 }
+
+const obstacles = [
+    { x: 200, y: 500, width: 400, height: 50 },
+    { x: 100, y: 0, width: 60, height: 600 }
+]
 
 addEventListener("keydown", (e) => {
     if (e.repeat) return;
 
-    e.preventDefault();
-
     const key = e.key.toLowerCase();
-    console.log(key);
+
+    if (key.startsWith("arrow")) {    
+        e.preventDefault();
+    }
 
     if (key === "a" || key === "arrowleft") {
-        player.xSpeed = -20;
+        player.xSpeed += -maxSpeed;
     }
     else if (key === "d" || key === "arrowright") {
-        player.xSpeed = 20;
+        player.xSpeed += maxSpeed;
     }
-    else if (key === "w" || key === "arrowup") {
-        player.ySpeed = -20;
-    }
-    else if (key === "s" || key === "arrowdown") {
-        player.ySpeed = 20;
+    else if (key === " " && player.y === canvasElement.height - player.height) {
+        player.ySpeed = -jumpForce;
     }
 });
 
 addEventListener("keyup", (e) => {
     const key = e.key.toLowerCase();
 
-    e.preventDefault();
+    if (key.startsWith("arrow")) {    
+        e.preventDefault();
+    }
 
     if (key === "a" || key === "arrowleft") {
-        player.xSpeed = 0;
+        player.xSpeed -= -maxSpeed;
     }
     else if (key === "d" || key === "arrowright") {
-        player.xSpeed = 0;
-    }
-    else if (key === "w" || key === "arrowup") {
-        player.ySpeed = 0;
-    }
-    else if (key === "s" || key === "arrowdown") {
-        player.ySpeed = 0;
+        player.xSpeed -= maxSpeed;
     }
 });
+
+function loop() {
+    canvas.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    player.x += player.xSpeed;
+    player.y += player.ySpeed;
+    player.ySpeed += gravity;
+    player.x = Math.min(Math.max(player.x, 0), canvasElement.width - player.width);
+    player.y = Math.min(Math.max(player.y, 0), canvasElement.height - player.height);
+
+    if (player.y === canvasElement.height - player.height) {
+        player.ySpeed = 0;   
+    }
+
+    handleObstacleCollisions();
+    drawPlayer(player);
+    drawObstacles(obstacles);
+    requestAnimationFrame(loop);
+}
+// Run game loop
+loop();
+
+function handleObstacleCollisions() {
+    for (const obstacle of obstacles) {
+        if (checkAABBCollision(player, obstacle)) {
+            // fix player TODO
+        }
+    }
+}
+
+function checkAABBCollision(box1, box2) {
+    return (
+        box1.x <= box2.x + box2.width  &&
+        box1.x + box1.width >= box2.x  &&
+        box1.y <= box2.y + box2.height &&
+        box1.y + box1.height >= box2.y
+    );
+}
 
 function drawPlayer(playerObject) {
     canvas.fillRect(
         playerObject.x,
         playerObject.y,
-        playerObject.w,
-        playerObject.h
+        playerObject.width,
+        playerObject.height
     );
 }
 
-function loop() {
-    canvas.clearRect(0, 0, 800, 600);
-    player.x += player.xSpeed;
-    player.y += player.ySpeed;
-    drawPlayer(player);
-    requestAnimationFrame(loop);
+function drawObstacles(obstacleArray) {
+    for (const obstacle of obstacleArray) {
+        canvas.fillRect(
+            obstacle.x,
+            obstacle.y,
+            obstacle.width,
+            obstacle.height
+        )
+    }
 }
-
-loop();
