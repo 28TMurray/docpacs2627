@@ -5,19 +5,28 @@ const maxSpeed = 10;
 const jumpForce = 30;
 const gravity = 3;
 
+const playerImage = new Image(50, 50);
+playerImage.src = "beast.webp";
+
 const player = {
     x: 800/2,
     y: 600/2,
     width: 50,
     height: 50,
     xSpeed: 0,
-    ySpeed: 0
+    ySpeed: 0,
+    onFloor: false
 }
 
 const obstacles = [
     { x: 200, y: 500, width: 400, height: 30 },
     { x: 100, y: 0, width: 25, height: 600 },
-    { x: 700, y: 0, width: 25, height: 600 }
+    { x: 600, y: 100, width: 25, height: 600 },
+    { x: 575, y: 200, width: 25, height: 30 },
+    { x: 575, y: 100, width: 25, height: 30 },
+    { x: 225, y: 400, width: 25, height: 30 },
+    { x: 440, y: 330, width: 10, height: 30 }
+    
 ]
 
 addEventListener("keydown", (e) => {
@@ -25,7 +34,7 @@ addEventListener("keydown", (e) => {
 
     const key = e.key.toLowerCase();
 
-    if (key.startsWith("arrow")) {    
+    if (key.startsWith("arrow") || key === " ") {    
         e.preventDefault();
     }
 
@@ -35,7 +44,8 @@ addEventListener("keydown", (e) => {
     else if (key === "d" || key === "arrowright") {
         player.xSpeed += maxSpeed;
     }
-    else if (key === " " && player.y === canvasElement.height - player.height) {
+
+    if (key === " " && player.onFloor) {
         player.ySpeed = -jumpForce;
     }
 });
@@ -56,28 +66,37 @@ addEventListener("keyup", (e) => {
 });
 
 function loop() {
+    // Clear canvas
     canvas.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    // Apply gravity
+    player.ySpeed += gravity;
+    // Apply speed
     player.x += player.xSpeed;
     player.y += player.ySpeed;
-    player.ySpeed += gravity;
+    // Clamp position
     player.x = Math.min(Math.max(player.x, 0), canvasElement.width - player.width);
     player.y = Math.min(Math.max(player.y, 0), canvasElement.height - player.height);
     
-    if (player.y === canvasElement.height - player.height) {
-        player.ySpeed = 0;   
-    }
-
     handleObstacleCollisions();
+
     drawPlayer(player);
     drawObstacles(obstacles);
+    
     requestAnimationFrame(loop);
 }
 // Run game loop
 loop();
 
+// AABB overlap check, and then correct position using the smallest axis
 function handleObstacleCollisions() {
+    player.onFloor = (player.y + player.height >= canvasElement.height);
+
     for (const obstacle of obstacles) {
         if (checkAABBCollision(player, obstacle)) {
+            // floor check
+            if (player.y + player.height > obstacle.y) {
+                player.onFloor = true;
+            }
             // left, right
             const overlapPlayerLObstacleR = obstacle.width - (player.x - obstacle.x);
             const overlapPlayerRObstacleL = (obstacle.x - player.x) - player.width;
@@ -90,7 +109,6 @@ function handleObstacleCollisions() {
 
             if (Math.abs(lowestLeftRight) < Math.abs(lowestTopBottom)) {
                 player.x += lowestLeftRight;
-                xSpeed = 0;
             }
             else {
                 player.y += lowestTopBottom;
@@ -110,7 +128,8 @@ function checkAABBCollision(box1, box2) {
 }
 
 function drawPlayer(playerObject) {
-    canvas.fillRect(
+    canvas.drawImage(
+        playerImage,
         playerObject.x,
         playerObject.y,
         playerObject.width,
