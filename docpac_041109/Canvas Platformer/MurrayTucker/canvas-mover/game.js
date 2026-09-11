@@ -15,8 +15,9 @@ const player = {
 }
 
 const obstacles = [
-    { x: 200, y: 500, width: 400, height: 50 },
-    { x: 100, y: 0, width: 60, height: 600 }
+    { x: 200, y: 500, width: 400, height: 30 },
+    { x: 100, y: 0, width: 25, height: 600 },
+    { x: 700, y: 0, width: 25, height: 600 }
 ]
 
 addEventListener("keydown", (e) => {
@@ -61,7 +62,7 @@ function loop() {
     player.ySpeed += gravity;
     player.x = Math.min(Math.max(player.x, 0), canvasElement.width - player.width);
     player.y = Math.min(Math.max(player.y, 0), canvasElement.height - player.height);
-
+    
     if (player.y === canvasElement.height - player.height) {
         player.ySpeed = 0;   
     }
@@ -77,17 +78,34 @@ loop();
 function handleObstacleCollisions() {
     for (const obstacle of obstacles) {
         if (checkAABBCollision(player, obstacle)) {
-            // fix player TODO
+            // left, right
+            const overlapPlayerLObstacleR = obstacle.width - (player.x - obstacle.x);
+            const overlapPlayerRObstacleL = (obstacle.x - player.x) - player.width;
+            // top, bottom
+            const overlapPlayerTObstacleB = obstacle.height - (player.y - obstacle.y);
+            const overlapPlayerBObstacleT = (obstacle.y - player.y) - player.height;
+
+            const lowestLeftRight = overlapPlayerLObstacleR < Math.abs(overlapPlayerRObstacleL) ? overlapPlayerLObstacleR : overlapPlayerRObstacleL;
+            const lowestTopBottom = overlapPlayerTObstacleB < Math.abs(overlapPlayerBObstacleT) ? overlapPlayerTObstacleB : overlapPlayerBObstacleT;
+
+            if (Math.abs(lowestLeftRight) < Math.abs(lowestTopBottom)) {
+                player.x += lowestLeftRight;
+                xSpeed = 0;
+            }
+            else {
+                player.y += lowestTopBottom;
+                player.ySpeed = 0;
+            }
         }
     }
 }
 
 function checkAABBCollision(box1, box2) {
     return (
-        box1.x <= box2.x + box2.width  &&
-        box1.x + box1.width >= box2.x  &&
-        box1.y <= box2.y + box2.height &&
-        box1.y + box1.height >= box2.y
+        box1.x < box2.x + box2.width  &&
+        box1.x + box1.width > box2.x  &&
+        box1.y < box2.y + box2.height &&
+        box1.y + box1.height > box2.y
     );
 }
 
