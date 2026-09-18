@@ -25,10 +25,74 @@
 <article>
 
 <h2>Contact Us</h2>
-
-<!-- PLACE YOUR FORM HERE -->
-
-
+<form method="post" action="http://ss1.ciwcertified.com/cgi-bin/process.php">
+    <h3>First Name</h3>
+    <div class="indent">
+        <input type="text" name="firstName" placeholder="Your name.">
+    </div>
+    <h3>Last Name</h3>
+    <div class="indent">
+        <input type="text" name="lastName" placeholder="Your last name.">
+    </div>
+    <h3>Company</h3>
+    <div class="indent">
+        <input type="text" name="company" placeholder="Your company.">
+    </div>
+    <h3>Phone Number</h3>
+    <div class="indent">
+        <input type="tel" name="phoneNumber" placeholder="Your telephone number.">
+    </div>
+    <h3>Email Address</h3>
+    <div class="indent">
+        <input type="email" name="emailAddress" placeholder="Your email address.">
+    </div>
+    <h3>Country</h3>
+    <div class="indent">
+        <input type="text" name="firstName" placeholder="Your country.">
+    </div>
+    <h3>Comments</h3>
+    <div class="indent">
+        <textarea name="comments" placeholder="What did you want to tell us?" rows="4"></textarea>
+    </div>
+    <div class="row">
+        <div class="column">
+            <h3>What days should we try to contact you?</h3>
+            <select name="contactDays" multiple="multiple">
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+                <option>Sunday</option>
+            </select>
+        </div>
+        <div class="column">
+            <h3>When should we try to contact you?</h3>
+            <div>
+                <input type="checkbox" name="morning"> Morning
+            </div>
+            <div>
+                <input type="checkbox" name="afternoon"> Afternoon
+            </div>
+            <div>
+                <input type="checkbox" name="evening"> Evening
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <h3>Would you like to be added to our mailing?</h3>
+        <div>
+            <input type="radio" name="mailingList" value="yes" checked="checked"> Yes
+        </div>
+        <div>
+            <input type="radio" name="mailingList" value="no"> No
+        </div>
+    </div>
+    <div class="center">
+        <input type="submit" id="submit" value="Submit">
+    </div>
+</form>
 </article>
 
 
