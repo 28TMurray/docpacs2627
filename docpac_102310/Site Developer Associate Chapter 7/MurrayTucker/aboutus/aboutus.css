@@ -91,6 +91,13 @@ background-color:#fff;
 display:block;
 }
 
+video.center
+{
+display: block; 
+margin-left: auto; 
+margin-right: auto;
+}
+
 footer
 {
 width: 600px;
@@ -119,7 +126,7 @@ margin-left: 275;
 text-align: center;
 }
 
-video.center {
+audio.center {
 display: block;
 margin-left: auto;
 margin-right: auto;
